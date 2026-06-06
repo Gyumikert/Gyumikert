@@ -537,11 +537,8 @@ async function submitOrder() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params)
     });
-    // Email küldés
-    if (CONFIG.emailjs_service_id !== 'YOUR_SERVICE_ID') {
-      await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_owner, params);
-      await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_customer, params);
-    }
+    // Email küldés a vevőnek
+    await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_customer, params);
     cart = {}; selectedLocation = null;
     updateCartBar();
     showSection('success');
