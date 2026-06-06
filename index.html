@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gyümikert – Friss gyümölcsök</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <style>
+    :root {
+      --cream: #fdf0f0;
+      --red: #c0192b;
+      --red-light: #e03a4e;
+      --cherry: #7b1226;
+      --cherry-dark: #4a0a18;
+      --text: #2a0a10;
+      --muted: #8a5560;
+      --white: #ffffff;
+      --shadow: 0 4px 24px rgba(80,10,30,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    nav { background: var(--cherry-dark); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+    .logo { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--cream); padding: 1rem 0; letter-spacing: -0.5px; }
+    .logo span { color: #f5c842; }
+    nav ul { list-style: none; display: flex; gap: 0.5rem; }
+    nav ul li a { color: rgba(255,255,255,0.80); text-decoration: none; font-size: 0.95rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: 2rem; transition: all 0.2s; }
+    nav ul li a:hover, nav ul li a.active { background: rgba(255,255,255,0.15); color: #fff; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, var(--cherry-dark) 0%, var(--cherry) 55%, var(--red) 100%); padding: 5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: '🍒'; font-size: 14rem; position: absolute; right: -3rem; top: -2rem; opacity: 0.10; transform: rotate(15deg); pointer-events: none; }
+    .hero::after { content: '🍒'; font-size: 8rem; position: absolute; left: -1rem; bottom: -1rem; opacity: 0.07; transform: rotate(-20deg); pointer-events: none; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; color: var(--white); line-height: 1.1; margin-bottom: 1rem; }
+    .hero p { font-size: 1.15rem; color: rgba(255,255,255,0.82); max-width: 500px; margin: 0 auto 2rem; font-weight: 300; line-height: 1.6; }
+    .btn { display: inline-block; background: var(--red); color: white; padding: 0.85rem 2.2rem; border-radius: 3rem; font-weight: 500; font-size: 1rem; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 16px rgba(192,25,43,0.40); }
+    .btn:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(192,25,43,0.50); }
+    .btn-white { background: white; color: var(--cherry); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .btn-white:hover { background: #fff0f0; color: var(--red); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--cherry); margin-bottom: 0.5rem; }
+    .section-sub { color: var(--muted); margin-bottom: 2.5rem; font-size: 1rem; }
+
+    /* SEASON BADGE */
+    .season-badge { display: inline-block; background: #ffeaea; color: var(--cherry); border: 1.5px solid #f5c0c8; border-radius: 2rem; padding: 0.35rem 1rem; font-size: 0.85rem; font-weight: 600; margin-bottom: 2rem; }
+
+    /* FEATURE CARDS */
+    .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1.5rem; margin-top: 1rem; }
+    .feature-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: var(--shadow); border-top: 3px solid var(--red); }
+    .feature-icon { font-size: 2.2rem; margin-bottom: 0.7rem; }
+    .feature-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); margin-bottom: 0.4rem; }
+    .feature-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+    /* PRODUCTS */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.5rem; }
+    .product-card { background: white; border-radius: 1.2rem; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(80,10,30,0.15); }
+    .product-card.selected { border-color: var(--red); }
+    .product-emoji { font-size: 4rem; text-align: center; padding: 1.5rem 1rem 0.5rem; background: linear-gradient(135deg, #fff0f2, #fde0e4); }
+    .product-info { padding: 1rem 1.2rem 1.2rem; }
+    .product-name { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+    .product-desc { font-size: 0.88rem; color: var(--muted); margin-bottom: 0.8rem; line-height: 1.5; }
+    .product-price { font-size: 1.2rem; font-weight: 700; color: var(--red); }
+    .product-unit { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
+    .qty-control { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.8rem; }
+    .qty-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--red); background: white; color: var(--red); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all 0.15s; line-height: 1; }
+    .qty-btn:hover { background: var(--red); color: white; }
+    .qty-display { font-weight: 700; font-size: 1rem; min-width: 2rem; text-align: center; }
+    .loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 1.1rem; }
+
+    /* CART BAR */
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--cherry-dark); color: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; z-index: 200; transform: translateY(100%); transition: transform 0.3s; box-shadow: 0 -4px 20px rgba(0,0,0,0.25); }
+    .cart-bar.visible { transform: translateY(0); }
+    .cart-bar-info { font-size: 0.95rem; }
+    .cart-bar-info strong { font-size: 1.1rem; display: block; }
+
+    /* ORDER */
+    .order-container { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem; }
+    .order-summary { background: white; border-radius: 1.2rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow); }
+    .order-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #fde0e4; font-size: 0.95rem; }
+    .order-item:last-child { border-bottom: none; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 0.4rem; font-size: 0.9rem; color: var(--cherry); }
+    .form-group input { width: 100%; padding: 0.75rem 1rem; border: 2px solid #f0d0d5; border-radius: 0.7rem; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--text); background: white; transition: border-color 0.2s; outline: none; }
+    .form-group input:focus { border-color: var(--red); }
+    .form-card { background: white; border-radius: 1.2rem; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+    .form-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--cherry); margin-bottom: 1rem; }
+    .locations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .location-card { border: 2px solid #f0d0d5; border-radius: 0.8rem; padding: 1rem; cursor: pointer; transition: all 0.2s; background: #fff7f8; }
+    .location-card:hover { border-color: var(--red-light); }
+    .location-card.selected { border-color: var(--red); background: #fff0f2; }
+    .location-city { font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+    .location-detail { font-size: 0.82rem; color: var(--muted); }
+    .notice { background: #fff0f2; border: 1px solid #f5c0c8; border-radius: 0.8rem; padding: 1rem 1.2rem; font-size: 0.88rem; color: var(--cherry); margin-bottom: 1.5rem; }
+
+    /* SUCCESS */
+    .success-box { text-align: center; padding: 4rem 2rem; max-width: 500px; margin: 0 auto; }
+    .success-icon { font-size: 5rem; margin-bottom: 1rem; }
+    .success-box h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--cherry); margin-bottom: 0.8rem; }
+    .success-box p { color: var(--muted); line-height: 1.6; }
+
+    /* ABOUT */
+    .about-container { max-width: 750px; margin: 0 auto; padding: 3rem 1.5rem; }
+    .about-card { background: white; border-radius: 1.5rem; padding: 2.5rem; box-shadow: var(--shadow); }
+    .about-card h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--cherry); margin-bottom: 1.2rem; }
+    .about-card p { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; font-size: 1rem; }
+    .about-highlight { background: linear-gradient(135deg, #fff0f2, #fde0e4); border-left: 4px solid var(--red); padding: 1rem 1.2rem; border-radius: 0 0.7rem 0.7rem 0; margin: 1.5rem 0; font-style: italic; color: var(--cherry); }
+
+    /* SEASON TIMELINE */
+    .timeline { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 2rem; }
+    .timeline-item { padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 500; }
+    .timeline-item.active { background: var(--red); color: white; }
+    .timeline-item.soon { background: #ffeaea; color: var(--cherry); border: 1.5px solid #f5c0c8; }
+    .timeline-item.later { background: #f5f5f5; color: #aaa; }
+
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 0.5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { nav ul li a { padding: 0.4rem 0.6rem; font-size: 0.85rem; } .logo { font-size: 1.3rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Gyümi<span>kert</span></div>
+  <ul>
+    <li><a href="#" onclick="showSection('home')" class="active" id="nav-home">Főoldal</a></li>
+    <li><a href="#" onclick="showSection('products')" id="nav-products">Rendelés</a></li>
+    <li><a href="#" onclick="showSection('about')" id="nav-about">Rólunk</a></li>
+  </ul>
+</nav>
+
+<!-- HOME -->
+<div id="section-home" class="section active">
+  <div class="hero">
+    <h1>Friss cseresznye<br>& meggy 🍒</h1>
+    <p>Válogatott szezonális gyümölcsök közvetlenül termelőktől. Rendelj online, vedd át a hozzád legközelebb eső ponton.</p>
+    <a class="btn btn-white" onclick="showSection('products')">Rendelés most →</a>
+  </div>
+
+  <div class="container">
+    <div class="season-badge">🍒 Most szezon: meggy — rendelj még ma!</div>
+
+    <h2 class="section-title">Miért Gyümikert?</h2>
+    <p class="section-sub">Nem szupermarket, nem ismeretlen kereskedő — személyesen állok helyt minden rendelésért.</p>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🌿</div>
+        <div class="feature-title">Megbízható forrás</div>
+        <div class="feature-desc">Közvetlenül termelőktől, ellenőrzött minőség. Tudom honnan jön minden kiló.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <div class="feature-title">Kényelmes átvétel</div>
+        <div class="feature-desc">Budapest, Piliscsaba, Budakalász — válaszd a hozzád legközelebb esőt.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Fizetés átvételkor</div>
+        <div class="feature-desc">Semmi előre utalás. Fizetsz amikor a kezedben van a gyümölcs.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 3rem">
+      <h2 class="section-title">Szezonális kínálat</h2>
+      <p class="section-sub">Mindig a legjobb minőségű, éppen szezonban lévő gyümölcsöket kínálom.</p>
+      <div class="timeline">
+        <div class="timeline-item later">🌸 Cseresznye (május–jún.)</div>
+        <div class="timeline-item active">🍒 Meggy (június–júl.)</div>
+        <div class="timeline-item soon">🍑 Barack (július–aug.)</div>
+        <div class="timeline-item later">🍎 Alma (szept.–okt.)</div>
+        <div class="timeline-item later">🫐 Szilva (aug.–szept.)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div id="section-products" class="section">
+  <div class="container">
+    <h2 class="section-title">Heti kínálat</h2>
+    <p class="section-sub">Frissítve hetente — válaszd ki amit szeretnél, add hozzá a kosárhoz.</p>
+    <div id="products-loading" class="loading">🍒 Termékek betöltése...</div>
+    <div id="products-grid" class="products-grid" style="display:none"></div>
+    <div id="no-products" style="display:none;text-align:center;padding:3rem;color:var(--muted)">
+      <div style="font-size:3rem;margin-bottom:1rem">😔</div>
+      <p>Ezen a héten nincs elérhető termék. Gyere vissza hamarosan!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER FORM -->
+<div id="section-order" class="section">
+  <div class="order-container">
+    <h2 class="section-title">Rendelés leadása</h2>
+    <p class="section-sub">Töltsd ki az adataidat és erősítsd meg a rendelést.</p>
+    <div class="order-summary">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--cherry);margin-bottom:1rem">🛒 Kosár tartalma</h3>
+      <div id="order-items-list"></div>
+    </div>
+    <div class="form-card">
+      <h3>Személyes adatok</h3>
+      <div class="form-group">
+        <label>Teljes név *</label>
+        <input type="text" id="field-name" placeholder="Kovács János">
+      </div>
+      <div class="form-group">
+        <label>Email cím *</label>
+        <input type="email" id="field-email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label>Telefonszám *</label>
+        <input type="tel" id="field-phone" placeholder="+36 30 123 4567">
+      </div>
+    </div>
+    <div class="form-card">
+      <h3>Átvételi helyszín</h3>
+      <div class="locations-grid" id="locations-grid"></div>
+    </div>
+    <div class="notice">
+      💳 Fizetés <strong>készpénzben az átvételkor</strong> történik. Visszaigazoló emailt küldünk a megadott email címre.
+    </div>
+    <button class="btn" style="width:100%;font-size:1.05rem;padding:1rem" onclick="submitOrder()" id="submit-btn">
+      Rendelés megerősítése →
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="section-success" class="section">
+  <div class="success-box">
+    <div class="success-icon">✅</div>
+    <h2>Rendelés leadva!</h2>
+    <p>Köszönjük a rendelést! Hamarosan visszaigazoló emailt kapsz a részletekkel.<br><br>Fizetés az átvételkor, készpénzben.</p>
+    <br>
+    <button class="btn" onclick="showSection('home')">Vissza a főoldalra</button>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="section-about" class="section">
+  <div class="about-container">
+    <div class="about-card">
+      <h2>Rólunk 🍒</h2>
+      <p>A Gyümikert egy személyes vállalkozás — nem egy nagy cég, hanem egy ember, aki komolyan veszi a minőséget és a megbízhatóságot.</p>
+      <div class="about-highlight">„Közvetlenül termelőktől hozom a gyümölcsöket, és személyesen állok helyt minden rendelésért."</div>
+      <p>Szezonális gyümölcsöket kínálunk — most főleg cseresznyét és meggyet, később barackot és almát is. A kínálat hetente változik, az aktuális termékeket a Rendelés oldalon találod.</p>
+      <p>Kérdésed van? Írj bátran: <a href="mailto:trkmatyi@gmail.com" style="color:var(--red)">trkmatyi@gmail.com</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cart-bar">
+  <div class="cart-bar-info">
+    <div id="cart-bar-items">0 kg</div>
+    <strong id="cart-bar-total">0 Ft</strong>
+  </div>
+  <button class="btn btn-white" onclick="goToOrder()">Rendelés →</button>
+</div>
+
+<script>
+const CONFIG = {
+  emailjs_public_key: 'YOUR_EMAILJS_PUBLIC_KEY',
+  emailjs_service_id: 'YOUR_SERVICE_ID',
+  emailjs_template_owner: 'YOUR_OWNER_TEMPLATE_ID',
+  emailjs_template_customer: 'YOUR_CUSTOMER_TEMPLATE_ID',
+  owner_email: 'trkmatyi@gmail.com',
+  sheets_products_url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=0&single=true&output=csv',
+  sheets_locations_url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=279211884&single=true&output=csv',
+};
+
+let products = [], locations = [], cart = {}, selectedLocation = null;
+
+if (CONFIG.emailjs_public_key !== 'YOUR_EMAILJS_PUBLIC_KEY') emailjs.init(CONFIG.emailjs_public_key);
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav ul li a').forEach(a => a.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+  return lines.slice(1).map(line => {
+    const vals = line.split(',').map(v => v.trim().replace(/"/g,''));
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = vals[i] || '');
+    return obj;
+  });
+}
+
+async function loadProducts() {
+  try {
+    const res = await fetch(CONFIG.sheets_products_url);
+    products = parseCSV(await res.text()).filter(r => r['Elérhető'] === 'IGEN');
+  } catch(e) {
+    products = [
+      { Emoji:'🍒', Név:'Meggy', Leírás:'Savanykás, telt szemű meggy. Ideális befőttnek, süteménynek, de frissen is remek.', Ár:'580', Egység:'kg' },
+      { Emoji:'🍒', Név:'Cseresznye', Leírás:'Édes, nagy szemű cseresznye. Frissen a legjobb!', Ár:'750', Egység:'kg' },
+    ];
+  }
+  renderProducts();
+}
+
+async function loadLocations() {
+  try {
+    const res = await fetch(CONFIG.sheets_locations_url);
+    locations = parseCSV(await res.text()).filter(r => r['Elérhető'] === 'IGEN');
+  } catch(e) {
+    locations = [
+      { Város:'Budapest', Helyszín:'Keleti pályaudvar előtt', Időpont:'Szombat 9:00–12:00' },
+      { Város:'Piliscsaba', Helyszín:'Aldi parkoló', Időpont:'Szombat 13:00–15:00' },
+      { Város:'Budakalász', Helyszín:'Főtér', Időpont:'Szombat 15:30–17:00' },
+    ];
+  }
+  renderLocations();
+}
+
+function renderProducts() {
+  document.getElementById('products-loading').style.display = 'none';
+  const grid = document.getElementById('products-grid');
+  if (products.length === 0) { document.getElementById('no-products').style.display = 'block'; return; }
+  grid.style.display = 'grid';
+  grid.innerHTML = products.map((p, i) => `
+    <div class="product-card" id="card-${i}">
+      <div class="product-emoji">${p.Emoji || '🍒'}</div>
+      <div class="product-info">
+        <div class="product-name">${p.Név}</div>
+        <div class="product-desc">${p.Leírás}</div>
+        <div class="product-price">${parseInt(p.Ár).toLocaleString('hu')} Ft <span class="product-unit">/ ${p.Egység}</span></div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+          <span class="qty-display" id="qty-${i}">0</span>
+          <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+          <span style="font-size:0.82rem;color:var(--muted);margin-left:0.3rem">${p.Egység}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderLocations() {
+  document.getElementById('locations-grid').innerHTML = locations.map((l, i) => `
+    <div class="location-card" id="loc-${i}" onclick="selectLocation(${i})">
+      <div class="location-city">📍 ${l.Város}</div>
+      <div class="location-detail">${l.Helyszín}</div>
+      <div class="location-detail" style="margin-top:0.3rem">🕐 ${l.Időpont}</div>
+    </div>`).join('');
+}
+
+function selectLocation(i) {
+  selectedLocation = i;
+  document.querySelectorAll('.location-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('loc-' + i).classList.add('selected');
+}
+
+function changeQty(i, delta) {
+  cart[i] = Math.max(0, (cart[i] || 0) + delta);
+  if (cart[i] === 0) delete cart[i];
+  document.getElementById('qty-' + i).textContent = cart[i] || 0;
+  document.getElementById('card-' + i).classList.toggle('selected', !!cart[i]);
+  updateCartBar();
+}
+
+function updateCartBar() {
+  const keys = Object.keys(cart);
+  const bar = document.getElementById('cart-bar');
+  if (keys.length === 0) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+  const totalQty = keys.reduce((s, k) => s + cart[k], 0);
+  const totalPrice = keys.reduce((s, k) => s + cart[k] * parseInt(products[k].Ár), 0);
+  document.getElementById('cart-bar-items').textContent = totalQty + ' kg összesen';
+  document.getElementById('cart-bar-total').textContent = totalPrice.toLocaleString('hu') + ' Ft (kb.)';
+}
+
+function goToOrder() {
+  if (Object.keys(cart).length === 0) return;
+  const total = Object.keys(cart).reduce((s,k)=>s+cart[k]*parseInt(products[k].Ár),0);
+  document.getElementById('order-items-list').innerHTML =
+    Object.keys(cart).map(k => {
+      const p = products[k];
+      return `<div class="order-item"><span>${p.Emoji} ${p.Név} × ${cart[k]} ${p.Egység}</span><strong>${(cart[k]*parseInt(p.Ár)).toLocaleString('hu')} Ft</strong></div>`;
+    }).join('') +
+    `<div class="order-item" style="margin-top:0.5rem"><strong>Összesen (kb.)</strong><strong style="color:var(--red)">${total.toLocaleString('hu')} Ft</strong></div>`;
+  showSection('order');
+}
+
+async function submitOrder() {
+  const name = document.getElementById('field-name').value.trim();
+  const email = document.getElementById('field-email').value.trim();
+  const phone = document.getElementById('field-phone').value.trim();
+  if (!name || !email || !phone) { alert('Kérlek töltsd ki az összes kötelező mezőt!'); return; }
+  if (selectedLocation === null) { alert('Kérlek válassz átvételi helyszínt!'); return; }
+  const loc = locations[selectedLocation];
+  const itemsText = Object.keys(cart).map(k =>
+    `${products[k].Emoji} ${products[k].Név}: ${cart[k]} ${products[k].Egység} — ${(cart[k]*parseInt(products[k].Ár)).toLocaleString('hu')} Ft`
+  ).join('\n');
+  const totalPrice = Object.keys(cart).reduce((s,k)=>s+cart[k]*parseInt(products[k].Ár),0);
+  const btn = document.getElementById('submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Küldés...';
+  btn.disabled = true;
+  const params = {
+    customer_name: name, customer_email: email, customer_phone: phone,
+    location_city: loc.Város, location_address: loc.Helyszín, location_time: loc.Időpont,
+    order_items: itemsText, order_total: totalPrice.toLocaleString('hu') + ' Ft',
+    owner_email: CONFIG.owner_email,
+  };
+  try {
+    if (CONFIG.emailjs_service_id !== 'YOUR_SERVICE_ID') {
+      await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_owner, params);
+      await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_customer, params);
+    }
+    cart = {}; selectedLocation = null;
+    document.querySelectorAll('.qty-display').forEach(el => el.textContent = '0');
+    document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('cart-bar').classList.remove('visible');
+    showSection('success');
+  } catch(e) {
+    alert('Hiba történt. Kérlek próbáld újra, vagy írj: trkmatyi@gmail.com');
+    btn.innerHTML = 'Rendelés megerősítése →';
+    btn.disabled = false;
+  }
+}
+
+loadProducts();
+loadLocations();
+</script>
+</body>
+</html>
