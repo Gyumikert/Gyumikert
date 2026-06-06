@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gyümikert – Friss gyümölcsök</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     :root {
       --cream: #fdf0f0;
@@ -271,7 +271,7 @@ const CONFIG = {
 
 let products = [], locations = [], cart = {}, selectedLocation = null;
 
-if (CONFIG.emailjs_public_key !== 'YOUR_EMAILJS_PUBLIC_KEY') emailjs.init(CONFIG.emailjs_public_key);
+if (CONFIG.emailjs_public_key !== 'YOUR_EMAILJS_PUBLIC_KEY') emailjs.init({ publicKey: CONFIG.emailjs_public_key });
 
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
