@@ -391,9 +391,11 @@ function updateCartBar() {
 }
 
 function getMapsLink(varos) {
+  if (!varos) return "";
   if (MAPS_LINKS[varos]) return MAPS_LINKS[varos];
   for (let k of Object.keys(MAPS_LINKS)) {
-    if (varos && varos.includes(k.split(",")[0])) return MAPS_LINKS[k];
+    if (varos.toLowerCase() === k.toLowerCase()) return MAPS_LINKS[k];
+    if (varos.toLowerCase().startsWith(k.toLowerCase().substring(0,8)) && k.toLowerCase().startsWith(varos.toLowerCase().substring(0,8))) return MAPS_LINKS[k];
   }
   return "";
 }
@@ -403,7 +405,7 @@ function renderLocations() {
     const varos = getField(l, "V\u00e1ros", "Varos");
     const hely = getField(l, "Helysz\u00edn", "Helyszin");
     const ido = getField(l, "Id\u0151pont", "Idopont");
-    const mapsLink = getMapsLink(varos);
+    const mapsLink = getField(l, "Maps", "maps") || getMapsLink(varos);
     return "<div class=\"location-card\" id=\"loc-"+i+"\" onclick=\"selectLocation("+i+")\">"+
       "<div class=\"location-city\">📍 "+varos+"</div>"+
       "<div class=\"location-detail\">"+hely+"</div>"+
