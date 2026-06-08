@@ -482,7 +482,7 @@ async function submitOrder() {
   const varos = getField(loc,"V\u00e1ros","Varos");
   const hely = getField(loc,"Helysz\u00edn","Helyszin");
   const ido = getField(loc,"Id\u0151pont","Idopont");
-  const mapsLink = getMapsLink(varos);
+  const mapsLink = getField(loc,"Maps","maps") || getMapsLink(varos);
   const totalPrice = Object.keys(cart).reduce((s,key) => {
     const parts = key.split("_"); return s + getPkgPrice(parseInt(parts[0]),parseInt(parts[1]))*cart[key];
   }, 0);
