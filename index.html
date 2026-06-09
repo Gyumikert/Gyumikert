@@ -21,7 +21,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "DM Sans", sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
     nav { background: var(--cherry-dark); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
-    .logo img { height: 48px; width: 48px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid rgba(255,255,255,0.3); background: white; }
+    .logo { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0; cursor: pointer; }
+    .logo-icon { width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--cream); letter-spacing: -0.5px; }
+    .logo-text span { color: #f5c842; }
     nav ul { list-style: none; display: flex; gap: 0.5rem; }
     nav ul li a { color: rgba(255,255,255,0.80); text-decoration: none; font-size: 0.95rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: 2rem; transition: all 0.2s; cursor: pointer; }
     nav ul li a:hover, nav ul li a.active { background: rgba(255,255,255,0.15); color: #fff; }
@@ -115,7 +118,10 @@
 <body>
 
 <nav>
-  <div class="logo"><img src="logó.png" onerror="this.src='logo.png'" alt="Gyümikert"></div>
+  <div class="logo" onclick="showSection('home')">
+    <div class="logo-icon">🍒</div>
+    <div class="logo-text">Gyümi<span>kert</span></div>
+  </div>
   <ul>
     <li><a onclick="showSection('home')" class="active" id="nav-home">Főoldal</a></li>
     <li><a onclick="showSection('products')" id="nav-products">Rendelés</a></li>
@@ -133,7 +139,7 @@
     </div>
   </div>
   <div class="container">
-    <div class="season-badge">🍒 Most szezon: meggy — rendelj még ma!</div>
+    <div class="season-badge">🍒 Most elérhető: meggy — rendelj még ma!</div>
     <h2 class="section-title">Hogyan működik?</h2>
     <p class="section-sub">Egyszerű, átlátható, gyors.</p>
     <div class="features">
@@ -143,7 +149,7 @@
     </div>
     <div style="margin-top:3rem">
       <h2 class="section-title">Szezonális kínálat</h2>
-      <p class="section-sub">A testvéremmel kínáljuk — mindig a legjobb minőségű, éppen szezonban lévő gyümölcsöket.</p>
+      <p class="section-sub">A legjobb minőséget próbáljuk nyújtani.</p>
       <div class="timeline">
         <div class="timeline-item later">🌸 Cseresznye (máj–jún)</div>
         <div class="timeline-item active">🍒 Meggy (jún–júl)</div>
