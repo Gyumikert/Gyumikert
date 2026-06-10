@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gyümikert – Friss gyümölcsök</title>
+  <link rel="icon" href="logó.png" type="image/png">
+  <link rel="apple-touch-icon" href="logó.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
@@ -64,7 +66,7 @@
     .product-unit { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
     .package-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; font-weight: 500; }
     .packages { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
-    .pkg-btn { padding: 0.35rem 0.9rem; border-radius: 2rem; border: 2px solid #f0d0d5; background: white; color: var(--cherry); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .pkg-btn { padding: 0.35rem 0.7rem; border-radius: 2rem; border: 2px solid #f0d0d5; background: white; color: var(--cherry); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .pkg-btn:hover { border-color: var(--red); }
     .pkg-btn.selected { background: var(--red); color: white; border-color: var(--red); }
     .add-btn { width: 100%; padding: 0.5rem 0.8rem; background: var(--cherry); color: white; border: none; border-radius: 2rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; }
@@ -149,7 +151,6 @@
     </div>
     <div style="margin-top:3rem">
       <h2 class="section-title">Szezonális kínálat</h2>
-      <p class="section-sub">A legjobb minőséget próbáljuk nyújtani.</p>
       <div class="timeline">
         <div class="timeline-item later">🌸 Cseresznye (máj–jún)</div>
         <div class="timeline-item active">🍒 Meggy (jún–júl)</div>
@@ -199,6 +200,7 @@
       <div class="locations-grid" id="locations-grid"></div>
     </div>
     <div class="notice">💳 Fizetés <strong>készpénzben az átvételkor</strong> történik. Visszaigazoló emailt küldünk a megadott email címre.</div>
+    <div class="notice" style="background:#fff8ee;border-color:#f5ddb0;color:#7a5000">📦 <strong>Tájékoztató:</strong> A gyümölcs műanyag ládában érkezik, melynek ára <strong>+500 Ft/láda</strong> az átvételkor.</div>
     <button class="btn" style="width:100%;font-size:1.05rem;padding:1rem" onclick="submitOrder()" id="submit-btn">Rendelés megerősítése →</button>
   </div>
 </div>
@@ -247,7 +249,7 @@ const CONFIG = {
   owner_email: "trkmatyi@gmail.com",
   sheets_products_url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=0&single=true&output=csv",
   sheets_locations_url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=279211884&single=true&output=csv",
-  apps_script_url: "https://script.google.com/macros/s/AKfycbwr21AbH__SsFAdnJEs8oaPBjpqUGWkJZ0Rxle2IMQ0zvM-RKWU-k1AoLJG1ISKLscL/exec",
+  apps_script_url: "https://script.google.com/macros/s/AKfycbwElDz2xsjhOdPnjCUxGLo24S3eYw50Mu-FH1XvX3ITev6jGlkMS26szajMDIWp8EFA/exec",
 };
 
 const MAPS_LINKS = {
@@ -457,7 +459,7 @@ function orderChangeQty(key, delta) {
   if (cart[key] === 0) delete cart[key];
   updateCartBar();
   renderOrderSummary();
-  if (Object.keys(cart).length === 0) showSection("products");
+  // Ne irányítsa vissza automatikusan ha kiürül a kosár
 }
 
 function goToOrder() {
