@@ -203,7 +203,6 @@
       <div class="locations-grid" id="locations-grid"></div>
     </div>
     <div class="notice">💳 Fizetés <strong>készpénzben az átvételkor</strong> történik. Visszaigazoló emailt küldünk a megadott email címre.</div>
-    <div class="notice" style="background:#fff8ee;border-color:#f5ddb0;color:#7a5000">📦 <strong>Tájékoztató:</strong> A gyümölcs műanyag ládában érkezik, melynek ára <strong>+500 Ft/láda</strong> az átvételkor.</div>
     <button class="btn" style="width:100%;font-size:1.05rem;padding:1rem" onclick="submitOrder()" id="submit-btn">Rendelés megerősítése →</button>
   </div>
 </div>
@@ -253,6 +252,7 @@ const CONFIG = {
   sheets_products_url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=0&single=true&output=csv",
   sheets_locations_url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHKLOP8nkG7_Sm0dnmPKrab9oUlR-skFIbM0mAPDRg-HXIJBEy_JZJxYMK-PG6BpAVYLVEkOcmYXY2/pub?gid=279211884&single=true&output=csv",
   apps_script_url: "https://script.google.com/macros/s/AKfycbwElDz2xsjhOdPnjCUxGLo24S3eYw50Mu-FH1XvX3ITev6jGlkMS26szajMDIWp8EFA/exec",
+  lada_ar: 500, // ← ITT VÁLTOZTATHATOD A LÁDA ÁRÁT (Ft)
 };
 
 const MAPS_LINKS = {
@@ -434,7 +434,7 @@ function selectLocation(i) {
 
 function renderOrderSummary() {
   const keys = Object.keys(cart);
-  const LADA_AR = 500;
+  const LADA_AR = CONFIG.lada_ar || 500;
   
   // Ládák száma = összes rendelési egység db
   const ladakSzama = keys.reduce((s, key) => s + cart[key], 0);
