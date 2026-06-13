@@ -198,7 +198,7 @@
       <div class="form-group"><label>Telefonszám</label><input type="tel" id="field-phone" placeholder="+36 30 123 4567"></div>
     </div>
     <div class="form-card">
-      <h3>Átvételi helyszín</h3>
+      <h3>Válasszon átvételi pontot</h3>
       <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">⏰ Az átvétel minden helyszínen <strong>szombaton 9:00–12:00</strong> között lehetséges.</p>
       <div class="locations-grid" id="locations-grid"></div>
     </div>
@@ -518,6 +518,9 @@ async function submitOrder() {
   const totalPrice = Object.keys(cart).reduce((s,key) => {
     const parts = key.split("_"); return s + getPkgPrice(parseInt(parts[0]),parseInt(parts[1]))*cart[key];
   }, 0);
+  const ladakSzamaEmail = Object.keys(cart).reduce((s,key) => s + cart[key], 0);
+  const ladaOsszegEmail = ladakSzamaEmail * (CONFIG.lada_ar || 500);
+  const totalWithLada = totalPrice + ladaOsszegEmail;
 
   const btn = document.getElementById("submit-btn");
   btn.innerHTML = "<span class=\"spinner\"></span> K\u00fcld\u00e9s...";
@@ -532,7 +535,8 @@ async function submitOrder() {
     location_time: ido,
     location_maps: mapsLink ? "T\u00e9rk\u00e9p: " + mapsLink : "",
     order_items: getCartText(),
-    order_total: totalPrice.toLocaleString("hu") + " Ft",
+    lada_info: "📦 Láda (" + ladakSzamaEmail + " db × " + (CONFIG.lada_ar || 500) + " Ft) = " + ladaOsszegEmail.toLocaleString("hu") + " Ft",
+    order_total: totalWithLada.toLocaleString("hu") + " Ft (gyümölcs + láda)",
     owner_email: CONFIG.owner_email,
   };
 
